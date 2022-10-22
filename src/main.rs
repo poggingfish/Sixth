@@ -1,10 +1,9 @@
 mod interpreter;
 mod stacktypes;
+use std::io::Write;
+
 use interpreter::*;
-pub fn run(){
-    let mut i: Interpreter;
-    i = Interpreter::new();
-    let program = "1 5 + 1 + 5 + 2 + 3 + .";
+pub fn run(mut i: Interpreter, program: &str){
     let parse = program.split(" ");
     let mut length: usize = 0;
     for _ in parse.clone(){
@@ -25,13 +24,25 @@ pub fn run(){
         if tok == "+"{
             add!(i);
         }
-        if tok == "."{
+        else if tok == "-"{
+            subtract!(i);
+        }
+        else if tok == "*"{
+            times!(i);
+        }
+        else if tok == "/"{
+            divide!(i);
+        }
+        else if tok == "."{
             println!("{}",pop!(i));
+            let _ = std::io::stdout().flush();
         }
         iter+=1;
     }
 }
 
 fn main(){
-    run();
+    let i: Interpreter;
+    i = Interpreter::new();
+    run(i, "1 1 + 1 + 2 * .");
 }

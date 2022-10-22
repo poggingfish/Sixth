@@ -20,7 +20,33 @@ macro_rules! add {
         push!($p,z);
     };
 }
-
+#[macro_export]
+macro_rules! subtract {
+    ($p: tt) => {
+        let x = pop!($p);
+        let y = pop!($p);
+        let z = x-y;
+        push!($p,z);
+    };
+}
+#[macro_export]
+macro_rules! times {
+    ($p: tt) => {
+        let x = pop!($p);
+        let y = pop!($p);
+        let z = x*y;
+        push!($p,z);
+    };
+}
+#[macro_export]
+macro_rules! divide {
+    ($p: tt) => {
+        let x = pop!($p);
+        let y = pop!($p);
+        let z = x/y;
+        push!($p,z);
+    };
+}
 #[derive(Clone)]
 pub struct Interpreter{
     pub stack: Vec<StackTypes>
