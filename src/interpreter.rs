@@ -1,4 +1,4 @@
-use std::{collections::HashMap, io::Write, ops::Index};
+use std::{collections::HashMap, io::Write};
 
 use crate::stacktypes::{*};
 #[macro_export]
@@ -63,8 +63,8 @@ macro_rules! divide {
 }
 #[derive(Clone, Debug)]
 pub enum Types{
-    STR = 0,
-    INT = 1
+    Strobj = 0,
+    Intobj = 1
 }
 #[derive(Clone, Debug)]
 pub struct Interpreter{
@@ -93,7 +93,7 @@ impl Interpreter{
 
 
 pub fn run(mut i: Interpreter, program: &str) -> Interpreter {
-    let parse = program.split(" ");
+    let parse = program.split(' ');
     let mut length: usize = 0;
     let mut isstr: bool = false;
     let mut strbuf: String = "".to_string();
@@ -152,10 +152,10 @@ pub fn run(mut i: Interpreter, program: &str) -> Interpreter {
         }
         else if tok == "."{
             let t = pop!(i);
-            if t.selected == Types::INT as i8{
+            if t.selected == Types::Intobj as i8{
                 println!("{}", t.inttype.unwrap())
             }
-            else if t.selected == Types::STR as i8{
+            else if t.selected == Types::Strobj as i8{
                 println!("{}", t.strtype.unwrap())
             }
             let _ = std::io::stdout().flush();
@@ -188,5 +188,5 @@ pub fn run(mut i: Interpreter, program: &str) -> Interpreter {
         }
         iter+=1;
     }
-    return i;
+    i
 }
