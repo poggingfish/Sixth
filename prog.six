@@ -1,0 +1,5 @@
+" test " fn
+1 +
+endfn
+
+1 call test .

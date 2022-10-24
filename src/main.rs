@@ -1,48 +1,68 @@
 mod interpreter;
 mod stacktypes;
-use std::io::Write;
-
+use std::{fs::read_to_string, env::args, process::exit};
 use interpreter::*;
-pub fn run(mut i: Interpreter, program: &str){
-    let parse = program.split(" ");
-    let mut length: usize = 0;
-    for _ in parse.clone(){
-        length+=1;
-    }
-    let mut iter: usize = 0;
-    while iter < length{
-        let tok = parse.clone().nth(iter).unwrap();
-        let int: i32;
-        let isint;
-        isint = tok.parse::<i32>().is_ok();
-        if isint{
-            int = tok.parse::<i32>().unwrap();
-            push!(i,int);
-            iter+=1;
-            continue;
-        }
-        if tok == "+"{
-            add!(i);
-        }
-        else if tok == "-"{
-            subtract!(i);
-        }
-        else if tok == "*"{
-            times!(i);
-        }
-        else if tok == "/"{
-            divide!(i);
-        }
-        else if tok == "."{
-            println!("{}",pop!(i));
-            let _ = std::io::stdout().flush();
-        }
-        iter+=1;
-    }
-}
-
 fn main(){
+    if args().len() < 2{
+        println!("Usage: sixth <file>");
+        exit(1);
+    }
     let i: Interpreter;
     i = Interpreter::new();
-    run(i, "1 1 + 1 + 2 * .");
+    let t = match read_to_string(args().nth(1).unwrap()){
+        Ok(t) => t
+            .replace("\n"," ")
+            .replace("  ", " ")
+            .replace("\t"," "),
+        Err(_) => panic!("File unknown")
+    };
+    let _i = run(i, t.as_str());
+}
+
+#[cfg(test)]
+mod tests{
+    use crate::interpreter::Interpreter;
+    use crate::interpreter::run;
+    #[test]
+    fn add(){
+        let i: Interpreter;
+        i = Interpreter::new();
+        let mut i = run(i,"1 1 +");
+        assert_eq!(i.stack.pop().unwrap().inttype.unwrap(),2);
+    }
+    #[test]
+    fn sub(){
+        let i: Interpreter;
+        i = Interpreter::new();
+        let mut i = run(i,"4 2 -");
+        assert_eq!(i.stack.pop().unwrap().inttype.unwrap(),2);
+    }
+    #[test]
+    fn mul(){
+        let i: Interpreter;
+        i = Interpreter::new();
+        let mut i = run(i,"4 2 *");
+        assert_eq!(i.stack.pop().unwrap().inttype.unwrap(),8);
+    }
+    #[test]
+    fn div(){
+        let i: Interpreter;
+        i = Interpreter::new();
+        let mut i = run(i,"4 2 /");
+        assert_eq!(i.stack.pop().unwrap().inttype.unwrap(),2);
+    }
+    #[test]
+    fn func(){
+        let i: Interpreter;
+        i = Interpreter::new();
+        let mut i = run(i,"\" add \" fn 1 + endfn 1 call add");
+        assert_eq!(i.stack.pop().unwrap().inttype.unwrap(),2);
+    }
+    #[test]
+    fn str(){
+        let i: Interpreter;
+        i = Interpreter::new();
+        let mut i = run(i,"\" Test \"");
+        assert_eq!(i.stack.pop().unwrap().strtype.unwrap(),"Test");
+    }
 }

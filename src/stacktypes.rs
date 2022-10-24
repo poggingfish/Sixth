@@ -1,4 +1,4 @@
-#[derive(Clone)]
+#[derive(Clone,Debug,PartialEq,Eq,Hash)]
 pub struct StackTypes{
     pub selected: i8,
     pub strtype: Option<String>,
