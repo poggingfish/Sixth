@@ -1,1 +1,7 @@
-1 1 + .
+fn dup
+set _duptmp_
+_duptmp_ _duptmp_
+endfn
+fn space
+"     "
+endfn

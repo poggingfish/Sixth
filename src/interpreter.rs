@@ -1,6 +1,6 @@
-use std::{collections::HashMap, io::Write};
+use std::{collections::HashMap, io::Write, process::exit};
 
-use crate::stacktypes::{*};
+use crate::{stacktypes::{*}, builtins::{builtins}};
 #[macro_export]
 macro_rules! push {
     ($i: tt,$f:tt) => {
@@ -98,7 +98,10 @@ impl Interpreter{
 
 
 
-pub fn run(mut i: Interpreter, program: &str) -> Interpreter {
+pub fn run(mut i: Interpreter, program: &str, main: bool) -> Interpreter {
+    if main{
+        i = run(i, &builtins(), false);
+    }
     let parse = program.split(' ');
     let mut length: usize = 0;
     let mut isstr: bool = false;
@@ -147,18 +150,38 @@ pub fn run(mut i: Interpreter, program: &str) -> Interpreter {
             continue;
         }
         if tok == "+"{
+            if i.clone().stack.len() < 2{
+                println!("Not enough arguments passed into +");
+                exit(1);
+            }
             add!(i);
         }
         else if tok == "-"{
+            if i.clone().stack.len() < 2{
+                println!("Not enough arguments passed into -");
+                exit(1);
+            }
             subtract!(i);
         }
         else if tok == "*"{
+            if i.clone().stack.len() < 2{
+                println!("Not enough arguments passed into *");
+                exit(1);
+            }
             times!(i);
         }
         else if tok == "/"{
+            if i.clone().stack.len() < 2{
+                println!("Not enough arguments passed into /");
+                exit(1);
+            }
             divide!(i);
         }
         else if tok == "."{
+            if i.clone().stack.is_empty(){
+                println!("Not enough arguments passed into .");
+                exit(1);
+            }
             let t = pop!(i);
             if t.selected == Types::Intobj as i8{
                 println!("{}", t.inttype.unwrap())
@@ -184,6 +207,24 @@ pub fn run(mut i: Interpreter, program: &str) -> Interpreter {
             currentfn = parse.clone().nth(iter).unwrap().to_string();
             isfn = true;
         }
+        else if tok == "str"{
+            let t = i.clone().stack.pop().unwrap();
+            if t.selected == Types::Strobj as i8{}
+            else{
+                i.stack.pop();
+                let f = t.inttype.unwrap().to_string();
+                spush!(i,f);
+            }
+        }
+        else if tok == "int"{
+            let t = i.clone().stack.pop().unwrap();
+            if t.selected == Types::Intobj as i8{}
+            else{
+                i.stack.pop();
+                let f = t.strtype.unwrap().parse::<i32>().unwrap();
+                push!(i,f);
+            }
+        }
         else if i.clone().vars.contains_key(tok){
             let x = i.vars.get(tok).unwrap();
             i.stack.push(x.to_owned());
@@ -193,7 +234,7 @@ pub fn run(mut i: Interpreter, program: &str) -> Interpreter {
             let f: StackTypes = StackTypes {strtype: Some(x), inttype: None, selected: 0};
             if i.functions.contains_key(&f){
                 let y = i.clone();
-                i = run(y.clone(), y.functions.get(&f).unwrap())
+                i = run(y.clone(), y.functions.get(&f).unwrap(), true)
             }
         }
         iter+=1;
