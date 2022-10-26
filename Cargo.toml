@@ -1,5 +1,8 @@
 [package]
 name = "sixth"
+description = "The Sixth Programming language"
+repository = "https://github.com/poggingfish/Sixth"
+license = "GPL-2.0-or-later WITH Bison-exception-2.2"
 version = "0.1.0"
 edition = "2021"
 
