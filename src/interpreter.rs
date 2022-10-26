@@ -30,8 +30,14 @@ macro_rules! add {
     ($p: tt) => {
         let x = pop!($p);
         let y = pop!($p);
-        let z = y.inttype.unwrap() + x.inttype.unwrap();
-        push!($p,z);
+        if y.selected == 1{
+            let z = y.inttype.unwrap() + x.inttype.unwrap();
+            push!($p,z);
+        }
+        else{
+            let z = y.strtype.unwrap() + &x.strtype.unwrap();
+            spush!($p,z);
+        }
     };
 }
 #[macro_export]
@@ -98,6 +104,7 @@ pub fn run(mut i: Interpreter, program: &str) -> Interpreter {
     let mut isstr: bool = false;
     let mut strbuf: String = "".to_string();
     let mut isfn: bool = false;
+    let mut currentfn: String = "".to_string();
     for _ in parse.clone(){
         length+=1;
     }
@@ -108,9 +115,10 @@ pub fn run(mut i: Interpreter, program: &str) -> Interpreter {
         let isint;
         if isfn{
             if tok == "endfn"{
-                i.functions.insert(i.stack.pop().unwrap(), strbuf.to_string());
+                i.functions.insert(StackTypes {strtype: Some(currentfn.clone().to_string()), inttype: None, selected: 0}, strbuf.to_string());
                 isfn = false;
                 strbuf = "".to_string();
+                currentfn = "".to_string();
             }
             else{
                 strbuf += &(tok.to_owned() + " ");
@@ -172,19 +180,21 @@ pub fn run(mut i: Interpreter, program: &str) -> Interpreter {
             i = y;
         }
         else if tok == "fn"{
-            isfn = true;
-        }
-        else if tok == "call"{
             iter+=1;
-            let x = parse.clone().nth(iter).unwrap().to_string();
-            let y = i.clone();
-            let f: StackTypes = StackTypes {strtype: Some(x), inttype: None, selected: 0};
-            let funcs = i.functions;
-            i = run(y, funcs.get(&f).unwrap())
+            currentfn = parse.clone().nth(iter).unwrap().to_string();
+            isfn = true;
         }
         else if i.clone().vars.contains_key(tok){
             let x = i.vars.get(tok).unwrap();
             i.stack.push(x.to_owned());
+        }
+        else{
+            let x = parse.clone().nth(iter).unwrap().to_string();
+            let f: StackTypes = StackTypes {strtype: Some(x), inttype: None, selected: 0};
+            if i.functions.contains_key(&f){
+                let y = i.clone();
+                i = run(y.clone(), y.functions.get(&f).unwrap())
+            }
         }
         iter+=1;
     }

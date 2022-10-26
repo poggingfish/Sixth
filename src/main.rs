@@ -55,7 +55,7 @@ mod tests{
     fn func(){
         let i: Interpreter;
         i = Interpreter::new();
-        let mut i = run(i,"\" add \" fn 1 + endfn 1 call add");
+        let mut i = run(i," fn add 1 + endfn 1 add");
         assert_eq!(i.stack.pop().unwrap().inttype.unwrap(),2);
     }
     #[test]
