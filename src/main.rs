@@ -9,13 +9,12 @@ fn main(){
     if args().len() < 2{
         repl();
     }
-    let i: Interpreter;
-    i = Interpreter::new();
+    let i: Interpreter = Interpreter::new();
     let t = match read_to_string(args().nth(1).unwrap()){
         Ok(t) => t
-            .replace("\n"," ")
+            .replace('\n'," ")
             .replace("  ", " ")
-            .replace("\t"," "),
+            .replace('\t'," "),
         Err(_) => panic!("File unknown")
     };
     let _i = run(i, t.as_str(), true);

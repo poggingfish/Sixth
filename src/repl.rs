@@ -3,8 +3,7 @@ use crate::interpreter::{Interpreter, run};
 
 pub fn repl(){
     let mut rl = rustyline::Editor::<()>::new().unwrap();
-    let mut i: Interpreter;
-    i = Interpreter::new();
+    let mut i: Interpreter = Interpreter::new();
     loop{
         print!("(");
         for i in i.clone().stack{

@@ -107,15 +107,14 @@ pub fn run(mut i: Interpreter, program: &str, main: bool) -> Interpreter {
     let mut isstr: bool = false;
     let mut strbuf: String = "".to_string();
     let mut isfn: bool = false;
+    let mut iter: usize = 0;
     let mut currentfn: String = "".to_string();
     for _ in parse.clone(){
         length+=1;
     }
-    let mut iter: usize = 0;
     while iter < length{
         let tok = parse.clone().nth(iter).unwrap();
         let int: i32;
-        let isint;
         if isfn{
             if tok == "endfn"{
                 i.functions.insert(StackTypes {strtype: Some(currentfn.clone().to_string()), inttype: None, selected: 0}, strbuf.to_string());
@@ -142,7 +141,7 @@ pub fn run(mut i: Interpreter, program: &str, main: bool) -> Interpreter {
             iter+=1;
             continue;
         }
-        isint = tok.parse::<i32>().is_ok();
+        let isint = tok.parse::<i32>().is_ok();
         if isint{
             int = tok.parse::<i32>().unwrap();
             push!(i,int);
