@@ -15,7 +15,7 @@ pub fn repl(){
                 print!("\"{}\" ", i.strtype.unwrap())
             }
         }
-        if i.clone().stack.len() >= 1{
+        if !i.clone().stack.is_empty(){
             print!("\x08");
         }
         println!(")");
