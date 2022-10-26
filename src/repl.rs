@@ -1,3 +1,5 @@
+use rustyline::config::Configurer;
+
 use crate::interpreter::{Interpreter, run};
 
 
@@ -18,6 +20,7 @@ pub fn repl(){
             print!("\x08");
         }
         println!(")");
+        rl.set_auto_add_history(true);
         let readline = rl.readline(" -> ").unwrap();
         i = run(i, readline.as_str(), true);
     }
